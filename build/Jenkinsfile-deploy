@@ -1,0 +1,25 @@
+pipeline {
+    agent {
+        docker {
+            image 'goforgold/build-container:latest'
+        }
+    }
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('jenkins-aws-secret-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
+    }
+    parameters {
+        string (
+            defaultValue: 'master',
+            description: '',
+            name : 'BRANCH_NAME')
+    }
+    stages {
+        stage('Create AMI') {
+            steps {
+                copyArtifacts fingerprintArtifacts: true, projectName: 'limitd/${BRANCH_NAME}', selector: lastSuccessful()
+                sh 'packer build -var "aws_access_key=${AWS_ACCESS_KEY_ID}" -var "aws_secret_key=${AWS_SECRET_ACCESS_KEY}" packer.json'
+            }
+        }
+    }
+}

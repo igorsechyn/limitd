@@ -1,0 +1,19 @@
+pipeline {
+    agent {
+        docker {
+            image 'node:6' 
+        }
+    }
+    options {
+        copyArtifactPermission('../limitd-deploy');
+    }
+    stages {
+        stage('Build & Test') { 
+            steps {
+                sh './build/scripts/build.sh'
+                archiveArtifacts artifacts: 'build-output/*', fingerprint: true
+                build job: 'limitd-deploy', parameters: [string(name: 'BRANCH_NAME', value: env.BRANCH_NAME)]
+            }
+        }
+    }
+}

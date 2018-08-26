@@ -1,0 +1,16 @@
+[Unit]
+Description=limitd Server
+
+[Service]
+ExecStart=/home/ubuntu/app/bin/limitd --config-file /home/ubuntu/app/limitd.conf
+Restart=always
+ # Restart service after 10 seconds if node service crashes
+ RestartSec=10
+ # Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=limitd
+Environment=NODE_ENV=production DB=/var/limitd/database
+
+[Install]
+WantedBy=multi-user.target

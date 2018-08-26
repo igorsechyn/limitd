@@ -41,3 +41,4 @@ perf/db
 
 *.orig
 .vscode
+build-output
